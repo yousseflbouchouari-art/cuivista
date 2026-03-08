@@ -3,189 +3,141 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import {
     LayoutDashboard,
-    BarChart3,
+    Store,
     Users,
-    Package,
-    Mail,
-    CreditCard,
     Settings,
-    Shield,
-    Moon,
-    Sun,
-    Bell,
-    Share2,
-    Plus,
-    Search,
     Menu,
-    Asterisk,
-    ChevronDown
+    Search,
+    Bell,
+    ChevronDown,
+    Database,
+    Globe,
+    Package,
+    ShoppingCart
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-
-const mainNav = [
-    { name: "Overview", href: "/", icon: LayoutDashboard },
-    { name: "Statistics", href: "/statistics", icon: BarChart3 },
-    { name: "Customers", href: "/customers", icon: Users },
-    { name: "Product", href: "/products", icon: Package, hasSub: true },
-    { name: "Messages", href: "/messages", icon: Mail, badge: "13" },
-    { name: "Transactions", href: "/transactions", icon: CreditCard },
-];
-
-const generalNav = [
-    { name: "Settings", href: "/settings", icon: Settings },
-    { name: "Security", href: "/security", icon: Shield },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
-    const { theme, setTheme } = useTheme();
     const { data: session } = useSession();
+    const { t, dir, toggleLanguage } = useLanguage();
+
+    const mainNav = [
+        { name: t("sidebar", "overview"), href: "/", icon: LayoutDashboard },
+        { name: t("sidebar", "stores"), href: "/stores", icon: Store },
+        { name: t("sidebar", "products"), href: "/products", icon: Package },
+        { name: t("sidebar", "orders"), href: "/orders", icon: ShoppingCart },
+        { name: t("sidebar", "data"), href: "/data", icon: Database },
+        { name: t("sidebar", "users"), href: "/users", icon: Users },
+        { name: t("sidebar", "roles"), href: "/roles", icon: Settings },
+        { name: t("sidebar", "settings"), href: "/settings", icon: Settings },
+    ];
 
     return (
-        <div className="flex h-screen overflow-hidden bg-background font-sans text-foreground">
+        <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans text-slate-900" dir={dir}>
             {/* Sidebar */}
-            <aside className="hidden w-64 md:flex flex-col bg-sidebar text-sidebar-foreground transition-all duration-300 rounded-tr-[2rem] rounded-br-[2rem] shadow-lg shrink-0 overflow-hidden relative z-20">
-                <div className="flex h-24 items-center px-8">
-                    <Asterisk className="h-8 w-8 text-sidebar-active mr-3" />
-                    <span className="text-2xl font-semibold tracking-tight text-sidebar-active-foreground">Siohioma</span>
-                </div>
-
-                <div className="flex flex-col flex-1 overflow-y-auto px-4 pb-4 no-scrollbar">
-                    <div className="mb-8">
-                        <p className="px-4 text-[10px] font-bold tracking-[0.15em] text-sidebar-foreground/70 uppercase mb-4 mt-2">Menu</p>
-                        <nav className="space-y-1.5">
-                            {mainNav.map((item) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`group relative flex items-center justify-between px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
-                                                ? "text-sidebar-active-foreground"
-                                                : "hover:text-sidebar-active-foreground"
-                                            }`}
-                                    >
-                                        {isActive && (
-                                            <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-10 bg-sidebar-active rounded-r-full" />
-                                        )}
-                                        <div className="flex items-center">
-                                            <item.icon
-                                                className={`mr-4 h-5 w-5 flex-shrink-0 transition-colors ${isActive ? "text-sidebar-active-foreground opacity-90" : "opacity-70 group-hover:opacity-100 group-hover:text-sidebar-active"
-                                                    }`}
-                                            />
-                                            {item.name}
-                                        </div>
-                                        {item.badge && (
-                                            <span className="bg-sidebar-active text-sidebar-active-foreground text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                                                {item.badge}
-                                            </span>
-                                        )}
-                                        {item.hasSub && (
-                                            <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
-                                        )}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
-                    </div>
-
-                    <div>
-                        <p className="px-4 text-[10px] font-bold tracking-[0.15em] text-sidebar-foreground/70 uppercase mb-4">General</p>
-                        <nav className="space-y-1.5">
-                            {generalNav.map((item) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`group relative flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
-                                                ? "text-sidebar-active-foreground"
-                                                : "hover:text-sidebar-active-foreground"
-                                            }`}
-                                    >
-                                        {isActive && (
-                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-sidebar-active rounded-r-full" />
-                                        )}
-                                        <div className="flex items-center">
-                                            <item.icon
-                                                className={`mr-4 h-5 w-5 flex-shrink-0 transition-colors ${isActive ? "text-sidebar-active-foreground opacity-90" : "opacity-70 group-hover:opacity-100 group-hover:text-sidebar-active"
-                                                    }`}
-                                            />
-                                            {item.name}
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                        </nav>
-                    </div>
-                </div>
-
-                <div className="p-6 mt-auto">
-                    <div className="flex items-center gap-4 text-sm px-2">
-                        <div className="w-10 h-10 rounded-full bg-sidebar-active/20 flex items-center justify-center text-sidebar-active font-bold border border-sidebar-active/30 overflow-hidden shrink-0">
-                            {session?.user?.image ? (
-                                <img src={session.user.image} alt="User" />
-                            ) : (
-                                "FP"
-                            )}
+            <aside className="hidden w-[260px] md:flex flex-col bg-white border-e border-slate-200 transition-all duration-300 shrink-0 overflow-hidden relative z-20">
+                <div className="flex h-16 items-center px-6 border-b border-transparent">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <div className="w-4 h-4 border-2 border-white rounded-sm"></div>
                         </div>
-                        <div className="flex flex-col min-w-0">
-                            <span className="text-white font-medium truncate">Fandaww Punx</span>
-                            <span className="text-xs text-sidebar-foreground truncate mt-0.5">fandaww6@gmail.com</span>
+                        <span className="text-xl font-bold tracking-tight text-slate-900">Siohioma</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col flex-1 overflow-y-auto px-4 py-6 no-scrollbar">
+                    <nav className="space-y-1">
+                        {mainNav.map((item) => {
+                            const isActive = pathname === item.href;
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
+                                        ? "bg-blue-50 text-blue-600"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                                        }`}
+                                >
+                                    <item.icon
+                                        className={`me-3 h-5 w-5 flex-shrink-0 transition-colors ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"
+                                            }`}
+                                    />
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+
+                    <div className="mt-auto pt-8 pb-4">
+                        <div className="bg-blue-600 rounded-2xl p-5 text-white shadow-lg mx-2">
+                            <p className="font-semibold text-sm">{t("header", "ready")}</p>
+                            <p className="text-xs text-blue-100 mt-1 mb-4 leading-relaxed">{t("header", "fullAccess")}</p>
+                            <button className="w-full bg-white text-blue-600 hover:bg-slate-50 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm">
+                                {t("header", "createAccount")}
+                            </button>
                         </div>
                     </div>
                 </div>
             </aside>
 
             {/* Main content */}
-            <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F8FAFC]">
                 {/* Header Container */}
-                <header className="flex h-24 items-center justify-between px-8 py-4 shrink-0 gap-4 bg-background">
+                <header className="flex h-16 items-center justify-between px-8 bg-white border-b border-slate-200 shrink-0 gap-4">
                     <div className="flex items-center gap-2">
-                        <button type="button" className="md:hidden text-muted-foreground hover:text-foreground p-2 -ml-2 rounded-md">
-                            <Menu className="h-6 w-6" />
+                        <button type="button" className="md:hidden text-slate-500 hover:text-slate-900 p-2 -ms-2 rounded-md">
+                            <Menu className="h-5 w-5" />
                         </button>
-                        <div className="flex items-center gap-2 cursor-pointer font-semibold text-xl text-foreground">
-                            Sales Admin <ChevronDown className="h-5 w-5 text-muted-foreground stroke-[2.5]" />
-                        </div>
                     </div>
 
-                    <div className="flex flex-1 justify-between items-center ml-12">
-                        <div className="hidden md:flex relative max-w-sm w-full">
-                            <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <div className="flex flex-1 justify-end items-center gap-4">
+                        <div className="hidden md:flex relative w-full max-w-[300px]">
+                            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Search anything in Siohioma..."
-                                className="w-full pl-5 pr-12 py-2.5 bg-card border border-border rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring placeholder:text-muted-foreground shadow-sm"
+                                placeholder={t("header", "search")}
+                                className="w-full ps-9 pe-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder:text-slate-400 transition-all"
                             />
                         </div>
 
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-3 ps-4 border-s border-slate-200">
+                            {/* Language Toggle */}
                             <button
-                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border text-foreground hover:bg-muted transition-colors shadow-sm"
+                                onClick={toggleLanguage}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
                             >
-                                <span className="absolute">
-                                    <Sun className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                                    <Moon className="absolute left-0 top-0 h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                                </span>
+                                <Globe className="h-4 w-4" />
+                                {t("header", "language")}
                             </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border text-foreground hover:bg-muted transition-colors shadow-sm">
-                                <Share2 className="h-4 w-4" />
+
+                            <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                                <Bell className="h-5 w-5" />
+                                <span className="absolute top-1.5 end-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                             </button>
-                            <button className="hidden sm:flex items-center gap-2 pl-4 pr-1.5 h-10 rounded-full border border-border bg-card text-foreground font-semibold text-sm shadow-sm hover:bg-muted transition-colors ml-2">
-                                Add new product <div className="w-7 h-7 rounded-full bg-foreground text-background flex items-center justify-center"><Plus className="h-4 w-4" /></div>
-                            </button>
+                            <div className="flex items-center gap-3 ms-2 cursor-pointer">
+                                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden shrink-0 border border-slate-300">
+                                    {session?.user?.image ? (
+                                        <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-xs font-medium text-slate-600">AD</span>
+                                    )}
+                                </div>
+                                <div className="hidden sm:flex items-center gap-1.5 min-w-0">
+                                    <span className="text-sm font-medium text-slate-700 truncate">Admin User</span>
+                                    <ChevronDown className="h-4 w-4 text-slate-400" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Content */}
-                <div className="flex-1 overflow-auto bg-background px-8 pb-8 custom-scrollbar">
-                    <div className="mx-auto w-full animate-in fade-in zoom-in-95 duration-300 pb-16">
+                <div className="flex-1 overflow-auto p-8 custom-scrollbar relative">
+                    <div className="mx-auto w-full max-w-7xl animate-in fade-in duration-300 pb-12">
                         {children}
                     </div>
                 </div>

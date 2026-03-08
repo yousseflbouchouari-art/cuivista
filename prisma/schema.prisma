@@ -3,10 +3,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -15,12 +17,12 @@ model Account {
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
+  refresh_token      String?
+  access_token       String?
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String?  @db.Text
+  id_token           String?
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -47,7 +49,29 @@ model User {
   role          Role?     @relation(fields: [roleId], references: [id])
   accounts      Account[]
   sessions      Session[]
-  orders        Order[]
+}
+
+model Store {
+  id          String    @id @default(cuid())
+  name        String
+  location    String?
+  status      String    @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  orders      Order[]
+  products    Product[]
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  name        String
+  email       String?   @unique
+  phone       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  orders      Order[]
 }
 
 model VerificationToken {
@@ -80,6 +104,8 @@ model Product {
   price       Float
   stock       Int         @default(0)
   imageUrl    String?
+  storeId     String?
+  store       Store?      @relation(fields: [storeId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -90,8 +116,16 @@ model Order {
   id          String      @id @default(cuid())
   status      String      @default("PENDING") // PENDING, PROCESSING, COMPLETED, CANCELLED
   total       Float
-  userId      String
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tax         Float       @default(0)
+  shipping    Float       @default(0)
+  discount    Float       @default(0)
+  
+  customerId  String
+  customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  storeId     String?
+  store       Store?      @relation(fields: [storeId], references: [id])
+
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
